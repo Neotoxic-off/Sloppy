@@ -1,13 +1,30 @@
 class Logger:
     def __init__(self):
         self.bind = {
-            "wait": "[ WAIT ]",
-            "done": "[ DONE ]",
-            "fail": "[ FAIL ]"
+            "wait": {
+                "display": "[ WAIT ]",
+                "color": "yellow"
+            },
+            "done": {
+                "display": "[ DONE ]",
+                "color": "green"
+            },
+            "fail": {
+                "display": "[ FAIL ]",
+                "color": "red"
+            }
+        }
+        self.colors = {
+            "red": "\033[31m",
+            "green": "\033[32m",
+            "yellow": "\033[33m",
+            "reset": "\033[0m"
         }
 
     def log(self, _type: str, message: str):
-        print("{} {}".format(
-            self.bind[_type],
+        print("{}{}{} {}".format(
+            self.colors[self.bind[_type]["color"]],
+            self.bind[_type]["display"],
+            self.colors["reset"],
             message
         ))

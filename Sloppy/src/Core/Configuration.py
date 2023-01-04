@@ -88,7 +88,7 @@ class Model:
 class Configuration:
     def __init__(self):
         self.path = "payloads"
-        self.extension = "spf"
+        self.extension = "json"
         self.payloads = []
         self.File = File()
         self.Model = Model()
