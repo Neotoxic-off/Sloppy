@@ -13,9 +13,9 @@ class File:
         
         return (content)
 
-    def save(self, path: str, data: str):
+    def save(self, path: str, data: dict):
         with open(path, 'w') as f:
-            f.write(data)
+            f.write(json.dumps(data, indent = 4))
 
     def search(self, path: str, extension: str):
         raw = os.listdir(path)

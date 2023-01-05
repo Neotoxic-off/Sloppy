@@ -12,10 +12,15 @@ class Logger:
             "fail": {
                 "display": "[ FAIL ]",
                 "color": "red"
+            },
+            "action": {
+                "display": "\t-->",
+                "color": "yellow"
             }
         }
         self.colors = {
             "red": "\033[31m",
+            "white": "\033[37m",
             "green": "\033[32m",
             "yellow": "\033[33m",
             "reset": "\033[0m"

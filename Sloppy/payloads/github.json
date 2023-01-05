@@ -1,4 +1,5 @@
 {
+    "name": "Github",
     "url": "https://github.com",
     "headers": {},
     "body": {},
@@ -6,6 +7,12 @@
         {
             "route": "/Neotoxic-off",
             "method": "GET",
+            "headers": {},
+            "body": {}
+        },
+        {
+            "route": "/Neotoxic-off",
+            "method": "POST",
             "headers": {},
             "body": {}
         }

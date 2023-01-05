@@ -16,7 +16,7 @@ class Call:
     def send(self, url: str, method: str, headers: dict, body: dict):
         result = self.bind[method](url, headers = headers, json = body)
         
-        self.Logger.log("done", "{} {} {}".format(
+        self.Logger.log("action", "{} {} {}".format(
             method,
             result.status_code,
             url

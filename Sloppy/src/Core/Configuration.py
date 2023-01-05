@@ -7,6 +7,10 @@ class Model:
     def __init__(self):
         self.requirements = [
             {
+                "name": "name",
+                "type": str
+            },
+            {
                 "name": "url",
                 "type": str
             },
@@ -116,7 +120,7 @@ class Configuration:
         for i, payload in enumerate(self.payloads):
             result = self.Model.validate(payload)
             if (result["waited"] == None):
-                self.Logger.log("done", "payload {} valid".format(i))
+                self.Logger.log("done", "payload '{}' valid".format(payload["name"]))
             else:
                 self.Logger.log("fail", "payload {} not valid: waited: '{}' got: '{}'".format(
                     i,
