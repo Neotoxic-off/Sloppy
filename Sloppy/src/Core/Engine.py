@@ -10,7 +10,11 @@ class Engine:
         self.Configuration = Configuration()
         self.Records = Records()
 
-        self.__run__()
+        self.__launch__()
+
+    def __launch__(self):
+        if (self.Configuration.valid == True):
+            self.__run__()
 
     def __run__(self):
         records = {}

@@ -2,101 +2,21 @@ import json
 
 from src.Tools.File import File
 from src.Logger.Logger import Logger
-
-class Model:
-    def __init__(self):
-        self.requirements = [
-            {
-                "name": "name",
-                "type": str
-            },
-            {
-                "name": "url",
-                "type": str
-            },
-            {
-                "name": "headers",
-                "type": dict
-            },
-            {
-                "name": "body",
-                "type": dict
-            },
-            {
-                "name": "actions",
-                "type": list
-            },
-        ]
-        self.action = [
-            {
-                "name": "route",
-                "type": str
-            },
-            {
-                "name": "method",
-                "type": str
-            },
-            {
-                "name": "headers",
-                "type": dict
-            },
-            {
-                "name": "body",
-                "type": dict
-            },
-        ]
-
-    def __actions__(self, actions: list):
-        for action in actions:
-            for default in self.action:
-                if (default["name"] in action):
-                    if (type(action[default["name"]]) != default["type"]):
-                        return ({
-                            "waited": default["type"],
-                            "got": type(action[default["name"]])
-                        })
-                else:
-                    return ({
-                        "waited": default["name"],
-                        "got": "not found"
-                    })
-        return ({
-            "waited": None,
-            "got": None
-        })
-
-    def validate(self, payload):
-        result = None
-    
-        for element in self.requirements:
-            if (element["name"] in payload):
-                if (type(payload[element["name"]]) != element["type"]):
-                    return ({
-                        "waited": element["type"],
-                        "got": type(payload[element["name"]])
-                    })
-                elif (element["name"] == "actions"):
-                    result = self.__actions__(payload[element["name"]])
-                    if (result["waited"] != None):
-                        return (result)
-            else:
-                return ({
-                    "waited": element["name"],
-                    "got": "not found"
-                })
-        return ({
-            "waited": None,
-            "got": None
-        })
+from src.Models.Payload import Payload
+from src.Models.Actions import Actions
+from src.Models.Automatisms import Automatisms
 
 class Configuration:
     def __init__(self):
         self.path = "payloads"
         self.extension = "json"
+        self.valid = True
         self.payloads = []
         self.File = File()
-        self.Model = Model()
+        self.Payload = Payload()
         self.Logger = Logger()
+        self.Actions = Actions()
+        self.Automatisms = Automatisms()
 
         self.__build__()
         self.__parse__()
@@ -118,16 +38,69 @@ class Configuration:
         self.Logger.log("wait", "checking payloads...")
 
         for i, payload in enumerate(self.payloads):
-            result = self.Model.validate(payload)
+            result = self.validate(payload)
             if (result["waited"] == None):
                 self.Logger.log("done", "payload '{}' valid".format(payload["name"]))
             else:
-                self.Logger.log("fail", "payload {} not valid: waited: '{}' got: '{}'".format(
+                self.Logger.log("fail", "payload {} not valid:\n\t waited: '{}' got: '{}'".format(
                     i,
                     result["waited"],
                     result["got"],
                 ))
+                self.valid = False
 
-        self.Logger.log("done", "all payloads checked")
-        
-            
+        if (self.valid == True):
+            self.Logger.log("done", "all payloads validated")
+
+    def __sub__(self, base, payload):
+        raw = base.__dict__
+
+        for element in raw:
+            if (element in payload.keys()):
+                if (type(payload[element]) != raw[element]):
+                    return ({
+                        "waited": f"{element}: {raw[element]}",
+                        "got": f"{element}: {type(payload[element])}"
+                    })
+            else:
+                return ({
+                    "waited": element,
+                    "got": "not found"
+                })
+        return ({
+            "waited": None,
+            "got": None
+        })
+
+    def __check__(self, base, payload):
+        raw = base.__dict__
+        result = None
+        bind = {
+            "actions": self.Actions,
+            "automatisms": self.Automatisms
+        }
+
+        for element in raw:
+            if (element in payload.keys()):
+                if (element in bind):
+                    for sub in payload[element]:
+                        result = self.__sub__(bind[element], sub)
+                        if (result["waited"] != None or result["got"] != None):
+                            return (result)
+                elif (type(payload[element]) != raw[element]):
+                    return ({
+                        "waited": f"{element}: {raw[element]}",
+                        "got": f"{element}: {type(payload[element])}"
+                    })
+            else:
+                return ({
+                    "waited": element,
+                    "got": "not found"
+                })
+        return ({
+            "waited": None,
+            "got": None
+        })
+
+    def validate(self, payload):
+        return (self.__check__(self.Payload, payload))
