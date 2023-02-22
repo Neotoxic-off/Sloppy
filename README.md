@@ -22,7 +22,8 @@
             "headers": {},
             "body": {}
         }
-    ]
+    ],
+    "automatisms": []
 }
 ```
 
